@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MVP Reactive</string>
+    <string name="value_text">Value : %s</string>
+    <string name="letter_text">Letter : %c</string>
+    <string name="num_text">Number : %d</string>
+    <string name="restart">Restart</string>
+    <string name="go_new_activity">Go new Activity</string>
+</resources>
