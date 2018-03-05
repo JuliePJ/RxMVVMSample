@@ -22,32 +22,32 @@ class AlphaNumViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     private var currentData: Pair<Long, Observable<String>>? = null
 
-    fun getAlphaNum(startValue: Long, forced: Boolean = false): Observable<String> {
-        if (forced || currentData?.first != startValue) {
+    fun getAlphaNum(param: Long, forced: Boolean = false): Observable<String> {
+        if (forced || currentData?.first != param) {
             compositeDisposable.clear()
-            currentData = startValue to combineAlphaNum(startValue)
-                    .toObservableString()
-                    .replay(1)
-                    .also { compositeDisposable.add(it.connect()) }
+            currentData = param to combineAlphaNum(param)
         }
         return currentData!!.second
     }
 
-    private fun getAlphabet(startValue: Long) =
-            DataProvider.instance.getAlphabet(startValue) {
+    private fun getAlphabet(param: Long) =
+            DataProvider.instance.getAlphabet(param) {
                 compositeDisposable.add(it)
             }
 
-    private fun combineAlphaNum(startValue: Long) = Observable.combineLatest(useCase.getNumber(startValue),
-            getAlphabet(startValue),
+    private fun combineAlphaNum(param: Long) = Observable.combineLatest(useCase.getNumber(param),
+            getAlphabet(param),
             BiFunction<Long, Char, Data> { t1, t2 -> Data(t1, t2) })
+            .mapToString()
+            .replay(1)
+            .also { compositeDisposable.add(it.connect()) }
 
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
     }
 
-    private fun Observable<Data>.toObservableString() =
+    private fun Observable<Data>.mapToString() =
             map {
                 log("map data to string")
                 "${it.number}${it.letter}"
